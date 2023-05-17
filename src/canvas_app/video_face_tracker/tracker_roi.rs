@@ -1,12 +1,12 @@
 use rustface::Rectangle;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub enum RoiState {
     DETECTED,
     NOTDETECTED,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct TrackerRoi {
     pub id: u32,
     pub tl_x: f64,
@@ -46,6 +46,7 @@ impl TrackerRoi {
             RoiState::DETECTED => {}
             RoiState::NOTDETECTED => {
                 self.state = RoiState::DETECTED;
+                // not_detected_countを初期化
                 self.not_detected_count = 0;
             }
         }
@@ -56,6 +57,7 @@ impl TrackerRoi {
                 self.state = RoiState::NOTDETECTED;
             }
             RoiState::NOTDETECTED => {
+                // not_detected_countを一つ増やす
                 self.not_detected_count += 1;
             }
         }

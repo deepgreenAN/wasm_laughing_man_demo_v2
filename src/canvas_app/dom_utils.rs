@@ -2,27 +2,32 @@ use crate::error::AppError;
 
 use wasm_bindgen::JsCast;
 
-pub fn get_element_by_id<T: JsCast>(id: &str) -> Result<T, AppError> {
-    gloo_utils::document()
-        .get_element_by_id(id)
-        .ok_or(AppError::DomError(format!("Not Found id: {id}")))?
-        .dyn_into::<T>()
-        .map_err(|element| {
-            AppError::DomError(format!(
-                "Cannot convert from element: {element:?} into: {}",
-                std::any::type_name::<T>()
-            ))
-        })
+/// documentを取得するヘルパー関数
+pub fn document() -> web_sys::Document {
+    leptos::document()
 }
 
-pub fn canvas(canvas_id: &str) -> Result<web_sys::HtmlCanvasElement, AppError> {
-    get_element_by_id(canvas_id)
+/// windowを取得するヘルパー関数
+pub fn window() -> web_sys::Window {
+    leptos::window()
 }
 
-pub fn context2d(canvas_id: &str) -> Result<web_sys::CanvasRenderingContext2d, AppError> {
-    canvas(canvas_id)?
+pub fn canvas(
+    context2d: &web_sys::CanvasRenderingContext2d,
+) -> Result<web_sys::HtmlCanvasElement, AppError> {
+    context2d.canvas().ok_or(AppError::DomError(
+        "Cannot get canvas from context2d".to_string(),
+    ))
+}
+
+pub fn context2d(
+    canvas: &web_sys::HtmlCanvasElement,
+) -> Result<web_sys::CanvasRenderingContext2d, AppError> {
+    canvas
         .get_context("2d")?
-        .ok_or(AppError::DomError("Cannot get context2d".to_string()))?
+        .ok_or(AppError::DomError(
+            "Cannot get context2d from canvas".to_string(),
+        ))?
         .dyn_into::<web_sys::CanvasRenderingContext2d>()
         .map_err(|object| {
             AppError::DomError(format!(

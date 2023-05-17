@@ -1,0 +1,90 @@
+#header-container {
+    background: linear-gradient(to top, cyan, 30%, black);
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    #logo-container {
+        display: flex;
+        justify-content: start;
+        align-items: center;
+
+        #logo-svg {
+            height: 4.5rem;
+            margin-left: 1rem;
+            
+            @media (max-width: 768px) {
+                & {
+                    margin-left: 0.5rem;
+                }
+            }
+        }
+    
+        #logo-text-svg {
+            width: 15rem;
+            margin-left: 1rem;
+
+            @media (max-width: 768px) {
+                & {
+                    margin-left: 0.5rem;
+                }
+            }
+        }
+    }
+    #hamburger-container {
+        display: flex;
+        justify-content: end;
+        align-items: center;
+
+        @media (max-width: 768px) {
+            & {
+                visibility: hidden;
+            }
+        }
+
+        #hamburger-text {
+            color: #ededed;
+            z-index: 6;
+            margin-right: 1rem;
+
+        }
+
+        .hamburger-button {
+            background-color: transparent;
+            color: #bfbfbf;
+            cursor: pointer;
+            margin-right: 1rem;
+            z-index: 6;
+
+            &:hover {
+                color: #8a8a8a;
+            }
+
+            svg {
+                min-height: 24px;
+                transition: transform 0.3s ease-in-out;
+
+                line {
+                    stroke: currentColor;
+                    stroke-width: 3;
+                    transition: transform 0.3s ease-in-out
+                }
+            }
+
+            &.active {
+                #top {
+                    transform: translate(6px, 0px) rotate(45deg)
+                }
+                #middle {
+                    opacity: 0;
+                }
+                #bottom {
+                    transform: translate(-12px, 9px) rotate(-45deg)
+                }
+            }
+        }
+    }
+}
+

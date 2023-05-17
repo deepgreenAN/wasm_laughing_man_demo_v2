@@ -1,4 +1,15 @@
-.main-app {
-    color: green;
-    background-color: red;
+@use "./canvas_app.scss";
+@use "./header.scss";
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#app-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    position: relative;
 }

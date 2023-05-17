@@ -31,14 +31,17 @@ web-sys = {version = "0.3.55", features = [
     'CssStyleDeclaration',
     'Node'
 ]}
-gloo-utils = "0.1.6"
+console_log = "1.0.0"
+log = "0.4.17"
+js-sys = "0.3.63"
 
 [profile.release]
 # less code to include into binary
-panic = 'abort'
+# panic = 'abort'
 # optimization over all codebase ( better optimization, slower build )
-codegen-units = 1
+# codegen-units = 1
 # optimization for size ( more aggressive )
-opt-level = 'z'
+# opt-level = 'z'
+opt-level = 3
 # link time optimization using using whole-program analysis
-lto = true
+# lto = true
