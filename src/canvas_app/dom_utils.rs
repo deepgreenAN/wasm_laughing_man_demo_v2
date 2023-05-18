@@ -12,6 +12,7 @@ pub fn window() -> web_sys::Window {
     leptos::window()
 }
 
+/// キャンバスのコンテキストからキャンバスを取得するヘルパー関数
 pub fn canvas(
     context2d: &web_sys::CanvasRenderingContext2d,
 ) -> Result<web_sys::HtmlCanvasElement, AppError> {
@@ -20,6 +21,7 @@ pub fn canvas(
     ))
 }
 
+/// キャンバスからコンテキストを取得するヘルパー関数
 pub fn context2d(
     canvas: &web_sys::HtmlCanvasElement,
 ) -> Result<web_sys::CanvasRenderingContext2d, AppError> {

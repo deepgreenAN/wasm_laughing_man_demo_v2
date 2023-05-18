@@ -1,6 +1,8 @@
 use super::tracker_roi::{RoiState, TrackerRoi};
 use rustface::Rectangle;
 
+use std::cmp::Ordering;
+
 /// シンプルな矩形のトラッカー
 pub struct Tracker {
     pub rois: Vec<TrackerRoi>,
@@ -22,33 +24,35 @@ impl Tracker {
     /// - 追加されたRoiの配列
     /// - 削除されたRoiの配列
     pub fn track(&mut self, faces: &Vec<Rectangle>) -> (Vec<TrackerRoi>, Vec<TrackerRoi>) {
-        let mut face_roi_conneted_flags: Vec<bool> = vec![false; faces.len()];
+        let mut face_roi_connected_flags: Vec<bool> = vec![false; faces.len()];
         // roisとfacesの結び付け(割り当て問題として解かずにidの小さいものから最も使いものと結びつける(貪欲法))
-        let mut min_dist_index: Option<usize> = None;
-        let mut min_dist = f64::INFINITY;
         for roi in self.rois.iter_mut() {
-            faces
+            let min_dist_face_and_flag_opt = faces
                 .iter()
-                .enumerate()
-                .filter(|(i, _)| !face_roi_conneted_flags[*i]) // まだ結びついていないもののみになるようにフィルタリング
-                .for_each(|(i, rect)| {
-                    let dist = roi.distance_with_rect(rect);
-                    if dist < min_dist {
-                        min_dist_index = Some(i);
-                        min_dist = dist;
+                .zip(face_roi_connected_flags.iter_mut())
+                .filter(|(_, flag)| !**flag) // まだマッチングしていないもののみ
+                .min_by(|(face_x, _), (face_y, _)| {
+                    match roi
+                        .distance_with_rect(*face_x)
+                        .partial_cmp(&roi.distance_with_rect(*face_y))
+                    {
+                        Some(ordering) => ordering,
+                        None => {
+                            Ordering::Greater // 計算できない(NaN)なら大きいとして最小は無いようにする
+                        }
                     }
                 });
-            if let Some(min_dist_index) = min_dist_index {
+
+            if let Some((min_dist_face, flag)) = min_dist_face_and_flag_opt {
                 // マッチングした場合
-                face_roi_conneted_flags[min_dist_index] = true; // 結びついたのでフラッグを更新
-                roi.tl_x = faces[min_dist_index].x() as f64;
-                roi.tl_y = faces[min_dist_index].y() as f64;
-                roi.width = faces[min_dist_index].width() as f64;
-                roi.height = faces[min_dist_index].height() as f64;
+                *flag = true;
+                roi.tl_x = min_dist_face.x() as f64;
+                roi.tl_y = min_dist_face.y() as f64;
+                roi.width = min_dist_face.width() as f64;
+                roi.height = min_dist_face.height() as f64;
 
                 roi.detected();
             } else {
-                // マッチングしなかった場合
                 roi.not_detected();
             }
         }
@@ -81,22 +85,24 @@ impl Tracker {
         //roiの追加
         let mut added_rois = Vec::<TrackerRoi>::new();
 
-        faces
+        for (new_face, _) in faces
             .iter()
-            .enumerate()
-            .filter(|(i, _)| !face_roi_conneted_flags[*i])
-            .for_each(|(_, rect)| {
-                self.id_counter += 1;
-                let roi = TrackerRoi::new(
-                    self.id_counter,
-                    rect.x() as f64,
-                    rect.y() as f64,
-                    rect.width() as f64,
-                    rect.height() as f64,
-                );
-                added_rois.push(roi.clone());
-                self.rois.push(roi);
-            });
+            .zip(face_roi_connected_flags.iter())
+            .filter(|(_, flag)| !**flag)
+        // マッチングしていないみののみ
+        {
+            self.id_counter += 1;
+            let roi = TrackerRoi::new(
+                self.id_counter,
+                new_face.x() as f64,
+                new_face.y() as f64,
+                new_face.width() as f64,
+                new_face.height() as f64,
+            );
+
+            added_rois.push(roi.clone());
+            self.rois.push(roi);
+        }
 
         (added_rois, removed_rois)
     }

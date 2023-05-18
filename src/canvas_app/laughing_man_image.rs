@@ -59,11 +59,13 @@ impl LaughingManImage {
 
         let img_style = img_element.style();
         img_style.set_css_text(&format!(
-            "position:absolute;top:{}px;left:{}px;z-index:{}",
+            "position:absolute;top:{}px;left:{}px;width:{}px;height:{}px;z-index:{}",
             (options.laughing_man_shift_ratio * (initial_state.height as f64)
                 + (initial_state.top as f64)) as u32,
             (options.laughing_man_shift_ratio * (initial_state.width as f64)
                 + (initial_state.left as f64)) as u32,
+            (options.laughing_man_size_ratio * (initial_state.width as f64)) as u32,
+            (options.laughing_man_size_ratio * (initial_state.height as f64)) as u32,
             options.laughing_man_z_index
         ));
         img_element.set_src(src_url);
@@ -96,7 +98,20 @@ impl LaughingManImage {
                     as u32
             ),
         )?;
-
+        img_style.set_property(
+            "width",
+            &format!(
+                "{}px",
+                (self.options.laughing_man_size_ratio * (state.width as f64)) as u32,
+            ),
+        )?;
+        img_style.set_property(
+            "height",
+            &format!(
+                "{}px",
+                (self.options.laughing_man_size_ratio * (state.height as f64)) as u32,
+            ),
+        )?;
         Ok(())
     }
 

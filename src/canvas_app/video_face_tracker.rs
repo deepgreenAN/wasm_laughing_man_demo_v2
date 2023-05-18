@@ -185,7 +185,7 @@ impl VideoFaceTracker {
             .data()
             .0;
 
-        let grey_image_vec = convert_rgba_to_luma(image_vec, self.image_size.0, self.image_size.1);
+        let grey_image_vec = convert_rgba_to_luma(image_vec);
 
         let faces = detect_faces(
             &mut *self.detector,
@@ -235,7 +235,7 @@ impl VideoFaceTracker {
             tracker_option.slide_window_step,
         );
 
-        // トラッカー
+        // トラッカーの初期化
         self.tracker = Tracker::new(tracker_option.allowable_not_detect_count);
 
         Ok(())

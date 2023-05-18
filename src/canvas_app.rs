@@ -1,13 +1,13 @@
 mod dom_utils;
 mod laughing_man_image;
-mod sidemenu;
+mod side_menu;
 mod video_face_tracker;
 
 use crate::Interval;
 use crate::IsSideMenuActive;
 use dom_utils::context2d;
 use laughing_man_image::{LaughingManImage, LaughingManOptions, LaughingManState};
-use sidemenu::SideMenu;
+use side_menu::SideMenu;
 use video_face_tracker::{TrackerOptions, VideoFaceInfo, VideoFaceTracker};
 
 use leptos::*;
@@ -192,6 +192,15 @@ pub fn CanvasApp(cx: Scope, header_height: u32) -> impl IntoView {
                         let canvas_app_over_input_image =
                             (1.0 / image_over_video_scale) * canvas_app_over_video_scale;
 
+                        // キャンバスのコンテキストの設定
+                        let canvas_context =
+                            context2d(&canvas_element).expect("Cannot get context2d.");
+
+                        canvas_context.set_font("20px serif");
+                        canvas_context.set_fill_style(&wasm_bindgen::JsValue::from_str("#FF0000"));
+                        canvas_context
+                            .set_stroke_style(&wasm_bindgen::JsValue::from_str("#FF0000"));
+
                         // インターバルを設定
                         let interval = Interval::new(interval_span.get(), {
                             let video_face_tracker = video_face_tracker.clone();
@@ -210,11 +219,6 @@ pub fn CanvasApp(cx: Scope, header_height: u32) -> impl IntoView {
                                         .expect("Cannot VideoFaceTracker step");
 
                                     let roi_numbers = rois.len();
-
-                                    let canvas_context =
-                                        context2d(&canvas_element).expect("Cannot get context2d.");
-
-                                    canvas_context.set_font("20px serif");
 
                                     // キャンパスの初期化
                                     canvas_context.clear_rect(

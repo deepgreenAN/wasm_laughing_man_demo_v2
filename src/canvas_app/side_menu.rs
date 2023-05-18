@@ -177,7 +177,7 @@ where
                 />
             </label>
             <label>
-                "笑い男拡大係数(0, ):"
+                "笑い男拡大係数(0.0, ):"
                 <input type="number" min=0 step=0.01
                     value={laughing_man_options.laughing_man_size_ratio.to_string()}
                     node_ref=laughing_man_size_ratio_nr
@@ -191,7 +191,7 @@ where
                 />
             </label>
             <label>
-                "描画インターバル時間(10, ):"
+                "描画インターバル時間(10, ) [ms]:"
                 <input type="number" step=10
                     value={interval_span.to_string()}
                     node_ref=interval_span_nr

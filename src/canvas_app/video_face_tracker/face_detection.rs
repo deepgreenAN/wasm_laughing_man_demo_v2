@@ -11,15 +11,12 @@ pub fn detect_faces(
     faces
 }
 
-pub fn convert_rgba_to_luma(rgba_vec: Vec<u8>, width: u32, height: u32) -> Vec<u8> {
-    let mut out_vec: Vec<u8> = vec![0; (width * height) as usize];
-    for i in 0..rgba_vec.len() {
-        if i % 4 == 0 {
-            // rのインデックス
-            out_vec[i / 4] = (0.299 * (rgba_vec[i] as f64)
-                + 0.587 * (rgba_vec[i + 1] as f64)
-                + 0.114 * (rgba_vec[i + 2] as f64)) as u8;
-        }
-    }
-    out_vec
+/// r, g, b, a * width * heightの画像をluma * width * heightに変換
+pub fn convert_rgba_to_luma(rgba_vec: Vec<u8>) -> Vec<u8> {
+    rgba_vec
+        .chunks_exact(4)
+        .map(|rgba| {
+            (0.299 * (rgba[0] as f64) + 0.587 * (rgba[1] as f64) + 0.114 * (rgba[2] as f64)) as u8
+        })
+        .collect::<Vec<_>>()
 }
