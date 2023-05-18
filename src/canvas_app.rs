@@ -119,6 +119,12 @@ pub fn CanvasApp(cx: Scope, header_height: u32) -> impl IntoView {
         }
     };
 
+    // データの読み込みとカメラの許可の文章
+    let (show_info, set_show_info) = create_signal(
+        cx,
+        Some("...メディアの利用許可とモデルの読み込みを待っています".to_string()),
+    );
+
     // トラッカーの初期化
     create_effect(cx, {
         // 他の場所で使う場合はここでクローン
@@ -174,6 +180,10 @@ pub fn CanvasApp(cx: Scope, header_height: u32) -> impl IntoView {
                         {
                             *video_face_tracker.borrow_mut() = Some(tracker);
                         }
+                        // メッセージを初期化
+                        set_show_info.set(None);
+
+                        // スクリーンのサイズから表示するサイズを設定
 
                         let ((canvas_app_width, canvas_app_height), canvas_app_over_video_scale) =
                             get_video_canvas_size(header_height, &video_element);
@@ -331,6 +341,10 @@ pub fn CanvasApp(cx: Scope, header_height: u32) -> impl IntoView {
                     }
                     Err(e) => {
                         log::error!("{e}");
+                        // メッセージの変更
+                        set_show_info.set(Some(
+                            "何かエラーが発生しました。詳しくはコンソールを見て下さい".to_string(),
+                        ))
                     }
                 }
             });
@@ -401,5 +415,16 @@ pub fn CanvasApp(cx: Scope, header_height: u32) -> impl IntoView {
             <video class="stream-video" node_ref=video_node_ref></video>
             <canvas class="canvas-app" node_ref=canvas_node_ref></canvas>
         </div>
+        {
+            move || {
+                show_info.get().map(|show_info_text|{
+                    view!{cx,
+                        <div class="show_info">
+                            {show_info_text}
+                        </div>
+                    }
+                })
+            }
+        }
     }
 }

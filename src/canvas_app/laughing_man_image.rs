@@ -55,17 +55,16 @@ impl LaughingManImage {
                 ))
             })?;
         img_element.set_id(&format!("laughing-man-img-{}", initial_state.id));
-        img_element.set_height(initial_state.height); // 高さのみ合わせる
+        img_element
+            .set_height(((initial_state.height as f64) * options.laughing_man_size_ratio) as u32); // 高さのみ合わせる
 
         let img_style = img_element.style();
         img_style.set_css_text(&format!(
-            "position:absolute;top:{}px;left:{}px;width:{}px;height:{}px;z-index:{}",
+            "position:absolute;top:{}px;left:{}px;z-index:{}",
             (options.laughing_man_shift_ratio * (initial_state.height as f64)
                 + (initial_state.top as f64)) as u32,
             (options.laughing_man_shift_ratio * (initial_state.width as f64)
                 + (initial_state.left as f64)) as u32,
-            (options.laughing_man_size_ratio * (initial_state.width as f64)) as u32,
-            (options.laughing_man_size_ratio * (initial_state.height as f64)) as u32,
             options.laughing_man_z_index
         ));
         img_element.set_src(src_url);
@@ -80,7 +79,8 @@ impl LaughingManImage {
     }
 
     pub fn step(&self, state: LaughingManState) -> Result<(), AppError> {
-        self.img_element.set_height(state.height); // 高さのみ合わせる
+        self.img_element
+            .set_height(((state.height as f64) * self.options.laughing_man_size_ratio) as u32); // 高さのみ合わせる
         let img_style = self.img_element.style();
         img_style.set_property(
             "top",
@@ -96,20 +96,6 @@ impl LaughingManImage {
                 "{}px",
                 (self.options.laughing_man_shift_ratio * (state.width as f64) + (state.left as f64))
                     as u32
-            ),
-        )?;
-        img_style.set_property(
-            "width",
-            &format!(
-                "{}px",
-                (self.options.laughing_man_size_ratio * (state.width as f64)) as u32,
-            ),
-        )?;
-        img_style.set_property(
-            "height",
-            &format!(
-                "{}px",
-                (self.options.laughing_man_size_ratio * (state.height as f64)) as u32,
             ),
         )?;
         Ok(())
